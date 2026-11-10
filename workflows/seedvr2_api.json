@@ -1,0 +1,23 @@
+{
+  "1": {"class_type": "LoadVideo", "inputs": {"file": "seedvr2/input.mkv"}},
+  "2": {"class_type": "GetVideoComponents", "inputs": {"video": ["1", 0]}},
+  "3": {"class_type": "SeedVR2LoadDiTModel", "inputs": {
+    "model": "seedvr2_ema_3b_fp8_e4m3fn.safetensors", "device": "cuda:0",
+    "blocks_to_swap": 28, "swap_io_components": true, "offload_device": "cpu",
+    "cache_model": false, "attention_mode": "sdpa"
+  }},
+  "4": {"class_type": "SeedVR2LoadVAEModel", "inputs": {
+    "model": "ema_vae_fp16.safetensors", "device": "cuda:0",
+    "encode_tiled": true, "encode_tile_size": 512, "encode_tile_overlap": 64,
+    "decode_tiled": true, "decode_tile_size": 512, "decode_tile_overlap": 64,
+    "offload_device": "cpu", "cache_model": false, "tile_debug": "false"
+  }},
+  "5": {"class_type": "SeedVR2VideoUpscaler", "inputs": {
+    "image": ["2", 0], "dit": ["3", 0], "vae": ["4", 0], "seed": 42,
+    "resolution": 1080, "max_resolution": 1920, "batch_size": 5,
+    "uniform_batch_size": true, "temporal_overlap": 3, "prepend_frames": 4,
+    "color_correction": "lab", "input_noise_scale": 0.0, "latent_noise_scale": 0.03,
+    "offload_device": "cpu", "enable_debug": false
+  }},
+  "7": {"class_type": "SaveImage", "inputs": {"images": ["5", 0], "filename_prefix": "seedvr2/frames"}}
+}
